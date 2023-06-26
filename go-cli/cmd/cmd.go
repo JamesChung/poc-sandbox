@@ -20,7 +20,7 @@ func NewCommand() *cobra.Command {
 }
 
 func run(cmd *cobra.Command, args []string) {
-	checkov := exec.Command("checkov", "--help")
+	checkov := exec.Command("checkov", args...)
 
 	stdout, err := checkov.StdoutPipe()
 	if err != nil {
