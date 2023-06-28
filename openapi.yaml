@@ -1,0 +1,113 @@
+openapi: '3.0.2'
+info:
+  title: Sample API
+  version: '1.0'
+servers:
+  - url: https://api.example.com/v1
+paths:
+  /configs:
+    get:
+      description: >
+        Searches for a configuration item
+      parameters:
+        - name: clientId
+          in: query
+          description: The unique client ID for a given client
+          required: true
+          schema:
+            type: string
+        - name: policy
+          in: query
+          description: The policy name
+          required: true
+          schema:
+            type: string
+        - name: policyVersion
+          in: query
+          description: The policy version
+          required: true
+          schema:
+            type: string
+      responses:
+        '202':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transaction_id:
+                    type: string
+    delete:
+      description: >
+        Removes the configuration uniquely identified
+        by the set of query parameters passed in
+      parameters:
+        - name: clientId
+          in: query
+          description: The unique client ID for a given client
+          required: true
+          schema:
+            type: string
+        - name: policy
+          in: query
+          description: The policy name
+          required: true
+          schema:
+            type: string
+        - name: policyVersion
+          in: query
+          description: The policy version
+          required: true
+          schema:
+            type: string
+      responses:
+        '202':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transaction_id:
+                    type: string
+  /policies:
+    get:
+      description: >
+        Gets an array of all the policies for a particular client ID
+      parameters:
+        - name: clientId
+          in: query
+          description: The client id
+          required: true
+          schema:
+            type: string
+        - name: continuationToken
+          in: query
+          description: (Optional) pagination token
+          required: false
+          schema:
+            type: string
+      responses:
+        '202':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  transaction_id:
+                    type: string
+    post:
+      responses:
+        '202':
+          description: OK
+  /exclusions:
+    post:
+      responses:
+        '202':
+          description: OK
+    delete:
+      responses:
+        '202':
+          description: OK
