@@ -11,8 +11,9 @@ package openapi
 
 import (
 	"context"
-	"net/http"
 	"errors"
+	"math/rand"
+	"net/http"
 )
 
 // DefaultApiService is a service that implements the logic for the DefaultApiServicer
@@ -81,36 +82,63 @@ func (s *DefaultApiService) ExclusionsPost(ctx context.Context, exclusionsPostRe
 
 // InfoGet - Get info
 func (s *DefaultApiService) InfoGet(ctx context.Context) (ImplResponse, error) {
-	// TODO - update InfoGet with the required logic for this service method.
-	// Add api_default_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, Info{}) or use other options such as http.Ok ...
-	//return Response(200, Info{}), nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("InfoGet method not implemented")
+	return Response(200, Info{
+		Version: "1.0.0",
+		Metadata: Metadata{
+			TransactionId: "01H448Y0XEBQ73YG7WXXVFWSNX",
+		},
+	}), nil
 }
 
 // PoliciesGet - Get policies
 func (s *DefaultApiService) PoliciesGet(ctx context.Context, clientId string, continuationToken string) (ImplResponse, error) {
-	// TODO - update PoliciesGet with the required logic for this service method.
-	// Add api_default_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(200, PoliciesGet200Response{}) or use other options such as http.Ok ...
-	//return Response(200, PoliciesGet200Response{}), nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("PoliciesGet method not implemented")
+	return Response(200, PoliciesGet200Response{
+		Policies: []Policy{
+			{
+				Name:     "EXAMPLE_RULE_42",
+				Version:  "1.0.0",
+				Location: "s3://example-bucket/example_policy_42.json",
+			},
+			{
+				Name:     "EXAMPLE_RULE_23",
+				Version:  "1.0.0",
+				Location: "s3://example-bucket/example_policy_23.json",
+			},
+			{
+				Name:     "EXAMPLE_RULE_49",
+				Version:  "1.0.0",
+				Location: "s3://example-bucket/example_policy_49.json",
+			},
+			{
+				Name:     "EXAMPLE_RULE_12",
+				Version:  "1.0.0",
+				Location: "s3://example-bucket/example_policy_12.json",
+			},
+			{
+				Name:     "EXAMPLE_RULE_26",
+				Version:  "1.0.0",
+				Location: "s3://example-bucket/example_policy_26.json",
+			},
+			{
+				Name:     "EXAMPLE_RULE_99",
+				Version:  "1.0.0",
+				Location: "s3://example-bucket/example_policy_99.json",
+			},
+		},
+		Metadata: Metadata{
+			TransactionId: "01H448Y0XEBQ73YG7WXXVFWSNX",
+		},
+	}), nil
 }
 
 // PoliciesPost - Add a policy
 func (s *DefaultApiService) PoliciesPost(ctx context.Context, policiesPostRequest PoliciesPostRequest) (ImplResponse, error) {
-	// TODO - update PoliciesPost with the required logic for this service method.
-	// Add api_default_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
-
-	//TODO: Uncomment the next line to return response Response(201, Metadata{}) or use other options such as http.Ok ...
-	//return Response(201, Metadata{}), nil
-
-	//TODO: Uncomment the next line to return response Response(202, Metadata{}) or use other options such as http.Ok ...
-	//return Response(202, Metadata{}), nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("PoliciesPost method not implemented")
+	if rand.Intn(2) == 0 {
+		return Response(201, Metadata{
+			TransactionId: "01H44AMA9YXZ08JZCQZNV89TE8",
+		}), nil
+	}
+	return Response(202, Metadata{
+		TransactionId: "01H44AN4JEY1G1WNMXQ0D14QZ4",
+	}), nil
 }
