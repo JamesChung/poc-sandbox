@@ -12,8 +12,9 @@ package openapi
 import (
 	"context"
 	"errors"
-	"math/rand"
+	"fmt"
 	"net/http"
+	"strings"
 )
 
 // DefaultApiService is a service that implements the logic for the DefaultApiServicer
@@ -35,9 +36,6 @@ func (s *DefaultApiService) ConfigsDelete(ctx context.Context, policy string, cl
 	//TODO: Uncomment the next line to return response Response(200, Metadata{}) or use other options such as http.Ok ...
 	//return Response(200, Metadata{}), nil
 
-	//TODO: Uncomment the next line to return response Response(202, Metadata{}) or use other options such as http.Ok ...
-	//return Response(202, Metadata{}), nil
-
 	return Response(http.StatusNotImplemented, nil), errors.New("ConfigsDelete method not implemented")
 }
 
@@ -54,30 +52,24 @@ func (s *DefaultApiService) ConfigsGet(ctx context.Context, clientId string, pol
 
 // ExclusionsDelete - Delete exclusions
 func (s *DefaultApiService) ExclusionsDelete(ctx context.Context, policy string, clientId string) (ImplResponse, error) {
-	// TODO - update ExclusionsDelete with the required logic for this service method.
-	// Add api_default_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
+	for k := range ExcludedPolicies {
+		if ExcludedPolicies[k] {
+			delete(ExcludedPolicies, k)
+		}
+	}
 
-	//TODO: Uncomment the next line to return response Response(200, Metadata{}) or use other options such as http.Ok ...
-	//return Response(200, Metadata{}), nil
-
-	//TODO: Uncomment the next line to return response Response(202, Metadata{}) or use other options such as http.Ok ...
-	//return Response(202, Metadata{}), nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("ExclusionsDelete method not implemented")
+	return Response(http.StatusOK, Metadata{
+		TransactionId: "01H448Y0XEBQ73YG7WXXVFWSNX",
+	}), nil
 }
 
-// ExclusionsPost - Get exclusions
+// ExclusionsPost - Exempt a policy for a given client
 func (s *DefaultApiService) ExclusionsPost(ctx context.Context, exclusionsPostRequest ExclusionsPostRequest) (ImplResponse, error) {
-	// TODO - update ExclusionsPost with the required logic for this service method.
-	// Add api_default_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
+	ExcludedPolicies[exclusionsPostRequest.Policy] = true
 
-	//TODO: Uncomment the next line to return response Response(200, Metadata{}) or use other options such as http.Ok ...
-	//return Response(200, Metadata{}), nil
-
-	//TODO: Uncomment the next line to return response Response(202, Metadata{}) or use other options such as http.Ok ...
-	//return Response(202, Metadata{}), nil
-
-	return Response(http.StatusNotImplemented, nil), errors.New("ExclusionsPost method not implemented")
+	return Response(http.StatusCreated, Metadata{
+		TransactionId: "01H448Y0XEBQ73YG7WXXVFWSNX",
+	}), nil
 }
 
 // InfoGet - Get info
@@ -90,41 +82,54 @@ func (s *DefaultApiService) InfoGet(ctx context.Context) (ImplResponse, error) {
 	}), nil
 }
 
+var ExcludedPolicies = make(map[string]bool)
+
+var AllPolicies = []Policy{
+	{
+		Name:     "EXAMPLE_RULE_42",
+		Version:  "1.0.0",
+		Location: "s3://example-bucket/example_policy_42.json",
+	},
+	{
+		Name:     "EXAMPLE_RULE_23",
+		Version:  "1.0.0",
+		Location: "s3://example-bucket/example_policy_23.json",
+	},
+	{
+		Name:     "EXAMPLE_RULE_49",
+		Version:  "1.0.0",
+		Location: "s3://example-bucket/example_policy_49.json",
+	},
+	{
+		Name:     "EXAMPLE_RULE_12",
+		Version:  "1.0.0",
+		Location: "s3://example-bucket/example_policy_12.json",
+	},
+	{
+		Name:     "EXAMPLE_RULE_26",
+		Version:  "1.0.0",
+		Location: "s3://example-bucket/example_policy_26.json",
+	},
+	{
+		Name:     "EXAMPLE_RULE_99",
+		Version:  "1.0.0",
+		Location: "s3://example-bucket/example_policy_99.json",
+	}}
+
+func PoliciesDelta() []Policy {
+	policies := []Policy{}
+	for _, v := range AllPolicies {
+		if !ExcludedPolicies[v.Name] {
+			policies = append(policies, v)
+		}
+	}
+	return policies
+}
+
 // PoliciesGet - Get policies
 func (s *DefaultApiService) PoliciesGet(ctx context.Context, clientId string, continuationToken string) (ImplResponse, error) {
 	return Response(http.StatusOK, PoliciesGet200Response{
-		Policies: []Policy{
-			{
-				Name:     "EXAMPLE_RULE_42",
-				Version:  "1.0.0",
-				Location: "s3://example-bucket/example_policy_42.json",
-			},
-			{
-				Name:     "EXAMPLE_RULE_23",
-				Version:  "1.0.0",
-				Location: "s3://example-bucket/example_policy_23.json",
-			},
-			{
-				Name:     "EXAMPLE_RULE_49",
-				Version:  "1.0.0",
-				Location: "s3://example-bucket/example_policy_49.json",
-			},
-			{
-				Name:     "EXAMPLE_RULE_12",
-				Version:  "1.0.0",
-				Location: "s3://example-bucket/example_policy_12.json",
-			},
-			{
-				Name:     "EXAMPLE_RULE_26",
-				Version:  "1.0.0",
-				Location: "s3://example-bucket/example_policy_26.json",
-			},
-			{
-				Name:     "EXAMPLE_RULE_99",
-				Version:  "1.0.0",
-				Location: "s3://example-bucket/example_policy_99.json",
-			},
-		},
+		Policies: PoliciesDelta(),
 		Metadata: Metadata{
 			TransactionId: "01H448Y0XEBQ73YG7WXXVFWSNX",
 		},
@@ -133,12 +138,13 @@ func (s *DefaultApiService) PoliciesGet(ctx context.Context, clientId string, co
 
 // PoliciesPost - Add a policy
 func (s *DefaultApiService) PoliciesPost(ctx context.Context, policiesPostRequest PoliciesPostRequest) (ImplResponse, error) {
-	if rand.Intn(2) == 0 {
-		return Response(http.StatusCreated, Metadata{
-			TransactionId: "01H44AMA9YXZ08JZCQZNV89TE8",
-		}), nil
-	}
-	return Response(http.StatusAccepted, Metadata{
+	AllPolicies = append(AllPolicies, Policy{
+		Name:     policiesPostRequest.Policy,
+		Version:  policiesPostRequest.PolicyVersion,
+		Location: fmt.Sprintf("s3://example-bucket/%s.json", strings.ToLower(policiesPostRequest.Policy)),
+	})
+
+	return Response(http.StatusCreated, Metadata{
 		TransactionId: "01H44AN4JEY1G1WNMXQ0D14QZ4",
 	}), nil
 }

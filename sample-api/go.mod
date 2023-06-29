@@ -1,5 +1,5 @@
-module github.com/GIT_USER_ID/GIT_REPO_ID
+module github.com/example/sample-api
 
-go 1.13
+go 1.20
 
 require github.com/gorilla/mux v1.8.0

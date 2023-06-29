@@ -79,15 +79,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Metadata'
           description: The policy is added
-        "202":
-          content:
-            application/json:
-              example:
-                metadata:
-                  transaction_id: 01H443TATWW2MX6H2KEJC0PWS3
-              schema:
-                $ref: '#/components/schemas/Metadata'
-          description: The policy is updated
       summary: Add a policy
   /configs:
     delete:
@@ -128,15 +119,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Metadata'
           description: Deletion is completed successfully
-        "202":
-          content:
-            application/json:
-              example:
-                metadata:
-                  transaction_id: 01H4475BR866G0QNV06M672650
-              schema:
-                $ref: '#/components/schemas/Metadata'
-          description: Deletion has been queued
       summary: Delete configurations
     get:
       description: |
@@ -182,7 +164,7 @@ paths:
   /exclusions:
     delete:
       description: |
-        Remove exclusion YYYYYY from the list of policies for clientId XXXXXXX. It does this by deleting the excemption record in the database to be evaluated as above.
+        Remove exclusion YYYYYY from the list of policies for clientId XXXXXXX. It does this by deleting the exemption record in the database to be evaluated as above.
       parameters:
       - description: The unique client ID for a given client
         explode: true
@@ -210,15 +192,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Metadata'
           description: Exclusion deletion completed successfully
-        "202":
-          content:
-            application/json:
-              example:
-                metadata:
-                  transaction_id: 01H4475BR866G0QNV06M672650
-              schema:
-                $ref: '#/components/schemas/Metadata'
-          description: Exclusion deletion is queued
       summary: Delete exclusions
     post:
       description: |
@@ -238,16 +211,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Metadata'
           description: Exclusion completed successfully
-        "202":
-          content:
-            application/json:
-              example:
-                metadata:
-                  transaction_id: 01H4475BR866G0QNV06M672650
-              schema:
-                $ref: '#/components/schemas/Metadata'
-          description: Exclusion is queued
-      summary: Get exclusions
+      summary: Exempt a policy for a given client
 components:
   schemas:
     Info:

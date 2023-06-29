@@ -143,7 +143,7 @@ func (c *DefaultApiController) ExclusionsDelete(w http.ResponseWriter, r *http.R
 
 }
 
-// ExclusionsPost - Get exclusions
+// ExclusionsPost - Exempt a policy for a given client
 func (c *DefaultApiController) ExclusionsPost(w http.ResponseWriter, r *http.Request) {
 	exclusionsPostRequestParam := ExclusionsPostRequest{}
 	d := json.NewDecoder(r.Body)
