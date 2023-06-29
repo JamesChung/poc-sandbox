@@ -46,9 +46,14 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Policy'
+                type: object
+                properties:
+                  policies:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Policy'
+                  metadata:
+                    $ref: '#/components/schemas/Metadata'
               example:
                 policies:
                   - name: EXAMPLE_RULE_23
@@ -185,9 +190,9 @@ paths:
     post:
       summary: Get exclusions
       description: >
-        Remove policy YYYYYY from the list of policies for clientId
-        XXXXXX. It does this by creating an exemption record in the database
-        to be evaluated as above. If the exclusion exists, it is considered successful.
+        Remove policy YYYYYY from the list of policies for clientId XXXXXX.
+        It does this by creating an exemption record in the database to be
+        evaluated as above. If the exclusion exists, it is considered successful.
       requestBody:
         content:
           application/json:
@@ -221,7 +226,7 @@ paths:
       summary: Delete exclusions
       description: >
         Remove exclusion YYYYYY from the list of policies for clientId XXXXXXX.
-        It does this by deleting the exemption record in the database to be
+        It does this by deleting the excemption record in the database to be
         evaluated as above.
       parameters:
         - name: clientId
@@ -273,8 +278,6 @@ components:
           type: string
         location:
           type: string
-        metadata:
-          $ref: '#/components/schemas/Metadata'
     Metadata:
       type: object
       properties:
