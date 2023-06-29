@@ -1,10 +1,54 @@
 openapi: '3.0.2'
 info:
-  title: Sample API
-  version: '1.0'
+  title: Matter replacement sample PoC API
+  version: '1.0.0'
 servers:
-  - url: https://api.example.com/v1
+  - url: https://api.matter.com/v1
+    description: Production Endpoint
+  - url: https://api.dev.matter.com/v1
+    description: Development Endpoint
 paths:
+  /info:
+    get:
+      description: >
+        Gets the current version and any other data that may be useful
+      responses:
+        '200':
+          description: Successful response of the current version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Info'
+  /policies:
+    get:
+      description: >
+        Gets an array of all the policies for a particular client ID
+      parameters:
+        - name: clientId
+          in: query
+          description: The client id
+          required: true
+          schema:
+            type: string
+        - name: continuationToken
+          in: query
+          description: (Optional) pagination token
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/Policy'
+    post:
+      responses:
+        '202':
+          description: OK
   /configs:
     get:
       description: >
@@ -40,8 +84,7 @@ paths:
                     type: string
     delete:
       description: >
-        Removes the configuration uniquely identified
-        by the set of query parameters passed in
+        Removes the configuration uniquely identified by the set of query parameters passed in
       parameters:
         - name: clientId
           in: query
@@ -71,37 +114,6 @@ paths:
                 properties:
                   transaction_id:
                     type: string
-  /policies:
-    get:
-      description: >
-        Gets an array of all the policies for a particular client ID
-      parameters:
-        - name: clientId
-          in: query
-          description: The client id
-          required: true
-          schema:
-            type: string
-        - name: continuationToken
-          in: query
-          description: (Optional) pagination token
-          required: false
-          schema:
-            type: string
-      responses:
-        '202':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  transaction_id:
-                    type: string
-    post:
-      responses:
-        '202':
-          description: OK
   /exclusions:
     post:
       responses:
@@ -111,3 +123,31 @@ paths:
       responses:
         '202':
           description: OK
+components:
+  schemas:
+    Info:
+      type: object
+      properties:
+        version: string
+    Policy:
+      type: object
+      properties:
+        _et: string
+        _default: boolean
+        name: string
+        version: string
+        location: string
+    Exemption:
+      type: object
+      properties:
+        _et: string
+        name: string
+        clientId: string
+    Additions:
+      type: object
+      properties:
+        _et: string
+        name: string
+        version: string
+        location: string
+        clientId: string
