@@ -193,7 +193,8 @@ paths:
     delete:
       summary: Delete exclusions
       description: >
-        Remove exclusion YYYYYY from the list of policies for clientId XXXXXXX. It does this by deleting the excemption record in the database to be evaluated as above.
+        Remove exclusion YYYYYY from the list of policies for clientId XXXXXXX.
+        It does this by deleting the exemption record in the database to be evaluated as above.
       parameters:
         - name: clientId
           in: query
