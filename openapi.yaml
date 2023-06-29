@@ -67,9 +67,7 @@ paths:
     post:
       summary: Add a policy
       description: >
-        Add an additional policy YYYYYY to clientId XXXXXX's to be returned. If the
-        version is specified, it will be added as well. If an existing policy
-        addition already exists, this will replace that entity.
+        Add an additional policy YYYYYY to clientId XXXXXX's to be returned. If the version is specified, it will be added as well. If an existing policy addition already exists, this will replace that entity.
       requestBody:
         content:
           application/json:
@@ -92,15 +90,6 @@ paths:
               example:
                 metadata:
                   transaction_id: 01H443S4MKWBYCYVYSTQEXKBMA
-        '202':
-          description: The policy is updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Metadata'
-              example:
-                metadata:
-                  transaction_id: 01H443TATWW2MX6H2KEJC0PWS3
   /configs:
     get:
       summary: Get configurations
@@ -132,8 +121,7 @@ paths:
       responses:
         '200':
           description: >
-            The configuration for each rule is going to be different, some will need lists
-            of account ids, whereas others will not require any configuration at all.
+            The configuration for each rule is going to be different, some will need lists of account ids, whereas others will not require any configuration at all.
           content:
             application/json:
               schema:
@@ -177,22 +165,11 @@ paths:
               example:
                 metadata:
                   transaction_id: 01H4475BR866G0QNV06M672650
-        '202':
-          description: Deletion has been queued
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Metadata'
-              example:
-                metadata:
-                  transaction_id: 01H4475BR866G0QNV06M672650
   /exclusions:
     post:
-      summary: Get exclusions
+      summary: Exempt a policy for a given client
       description: >
-        Remove policy YYYYYY from the list of policies for clientId XXXXXX.
-        It does this by creating an exemption record in the database to be
-        evaluated as above. If the exclusion exists, it is considered successful.
+        Remove policy YYYYYY from the list of policies for clientId XXXXXX. It does this by creating an exemption record in the database to be evaluated as above. If the exclusion exists, it is considered successful.
       requestBody:
         content:
           application/json:
@@ -213,21 +190,10 @@ paths:
               example:
                 metadata:
                   transaction_id: 01H4475BR866G0QNV06M672650
-        '202':
-          description: Exclusion is queued
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Metadata'
-              example:
-                metadata:
-                  transaction_id: 01H4475BR866G0QNV06M672650
     delete:
       summary: Delete exclusions
       description: >
-        Remove exclusion YYYYYY from the list of policies for clientId XXXXXXX.
-        It does this by deleting the excemption record in the database to be
-        evaluated as above.
+        Remove exclusion YYYYYY from the list of policies for clientId XXXXXXX. It does this by deleting the excemption record in the database to be evaluated as above.
       parameters:
         - name: clientId
           in: query
@@ -244,15 +210,6 @@ paths:
       responses:
         '200':
           description: Exclusion deletion completed successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Metadata'
-              example:
-                metadata:
-                  transaction_id: 01H4475BR866G0QNV06M672650
-        '202':
-          description: Exclusion deletion is queued
           content:
             application/json:
               schema:

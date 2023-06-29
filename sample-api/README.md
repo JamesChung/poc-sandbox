@@ -15,6 +15,11 @@ To see how to make this your own, look here:
 - API version: 1.0.0
 - Build date: 2023-06-29T14:28:09.972841-05:00[America/Chicago]
 
+### CodeGen
+
+```
+openapi-generator generate -i openapi.yaml -g go-server -o sample-api
+```
 
 ### Running the server
 To run the server, follow these simple steps:

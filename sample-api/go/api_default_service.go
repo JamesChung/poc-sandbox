@@ -82,7 +82,7 @@ func (s *DefaultApiService) ExclusionsPost(ctx context.Context, exclusionsPostRe
 
 // InfoGet - Get info
 func (s *DefaultApiService) InfoGet(ctx context.Context) (ImplResponse, error) {
-	return Response(200, Info{
+	return Response(http.StatusOK, Info{
 		Version: "1.0.0",
 		Metadata: Metadata{
 			TransactionId: "01H448Y0XEBQ73YG7WXXVFWSNX",
@@ -92,7 +92,7 @@ func (s *DefaultApiService) InfoGet(ctx context.Context) (ImplResponse, error) {
 
 // PoliciesGet - Get policies
 func (s *DefaultApiService) PoliciesGet(ctx context.Context, clientId string, continuationToken string) (ImplResponse, error) {
-	return Response(200, PoliciesGet200Response{
+	return Response(http.StatusOK, PoliciesGet200Response{
 		Policies: []Policy{
 			{
 				Name:     "EXAMPLE_RULE_42",
@@ -134,11 +134,11 @@ func (s *DefaultApiService) PoliciesGet(ctx context.Context, clientId string, co
 // PoliciesPost - Add a policy
 func (s *DefaultApiService) PoliciesPost(ctx context.Context, policiesPostRequest PoliciesPostRequest) (ImplResponse, error) {
 	if rand.Intn(2) == 0 {
-		return Response(201, Metadata{
+		return Response(http.StatusCreated, Metadata{
 			TransactionId: "01H44AMA9YXZ08JZCQZNV89TE8",
 		}), nil
 	}
-	return Response(202, Metadata{
+	return Response(http.StatusAccepted, Metadata{
 		TransactionId: "01H44AN4JEY1G1WNMXQ0D14QZ4",
 	}), nil
 }
