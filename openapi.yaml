@@ -1,26 +1,30 @@
-openapi: '3.0.2'
+openapi: '3.0.3'
 info:
   title: Matter replacement sample PoC API
   version: '1.0.0'
 servers:
   - url: https://api.matter.com/v1
     description: Production Endpoint
-  - url: https://api.dev.matter.com/v1
-    description: Development Endpoint
 paths:
   /info:
     get:
+      summary: Get info
       description: >
         Gets the current version and any other data that may be useful
       responses:
         '200':
-          description: Successful response of the current version
+          description: The current version and any other data that may be useful
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Info'
+              example:
+                version: '1.0.0'
+                metadata:
+                  transaction_id: 01H44690SXVQTPH0ARJ357RYRW
   /policies:
     get:
+      summary: Get policies
       description: >
         Gets an array of all the policies for a particular client ID
       parameters:
@@ -38,21 +42,69 @@ paths:
             type: string
       responses:
         '200':
-          description: OK
+          description: List of policies for a given client ID
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#components/schemas/Policy'
+                  $ref: '#/components/schemas/Policy'
+              example:
+                policies:
+                  - name: EXAMPLE_RULE_23
+                    version: '1.0.0'
+                    location: 's3://example-bucket/example_policy_23.json'
+                  - name: EXAMPLE_RULE_42
+                    version: '1.0.0'
+                    location: 's3://example-bucket/example_policy_42.json'
+                metadata:
+                  transaction_id: 01H446AJM6GEY9833ZFYGYQS1N
     post:
+      summary: Add a policy
+      description: >
+        Add an additional policy YYYYYY to clientId XXXXXX's to be returned. If the
+        version is specified, it will be added as well. If an existing policy
+        addition already exists, this will replace that entity.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientId:
+                  type: string
+                policy:
+                  type: string
+                policyVersion:
+                  type: string
       responses:
+        '201':
+          description: The policy is added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metadata'
+              example:
+                metadata:
+                  transaction_id: 01H443S4MKWBYCYVYSTQEXKBMA
         '202':
-          description: OK
+          description: The policy is updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metadata'
+              example:
+                metadata:
+                  transaction_id: 01H443TATWW2MX6H2KEJC0PWS3
   /configs:
     get:
-      description: >
-        Searches for a configuration item
+      summary: Get configurations
+      description: |
+        Searches for a configuration item in the following order:
+        - by clientId/policy/policyVersion
+        - by clientId/policy
+        - by policy/policyVersion
+        - by policy
       parameters:
         - name: clientId
           in: query
@@ -73,23 +125,29 @@ paths:
           schema:
             type: string
       responses:
-        '202':
-          description: OK
+        '200':
+          description: >
+            The configuration for each rule is going to be different, some will need lists
+            of account ids, whereas others will not require any configuration at all.
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  transaction_id:
-                    type: string
+                  configuration:
+                    type: object
+                    description: Configuration document
+                  metadata:
+                    $ref: '#/components/schemas/Metadata'
     delete:
+      summary: Delete configurations
       description: >
-        Removes the configuration uniquely identified by the set of query parameters passed in
+        Removes the configuration uniquely identified by the set of query parameters passed in.
       parameters:
         - name: clientId
           in: query
           description: The unique client ID for a given client
-          required: true
+          required: false
           schema:
             type: string
         - name: policy
@@ -101,53 +159,124 @@ paths:
         - name: policyVersion
           in: query
           description: The policy version
-          required: true
+          required: false
           schema:
             type: string
       responses:
-        '202':
-          description: OK
+        '200':
+          description: Deletion is completed successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  transaction_id:
-                    type: string
+                $ref: '#/components/schemas/Metadata'
+              example:
+                metadata:
+                  transaction_id: 01H4475BR866G0QNV06M672650
+        '202':
+          description: Deletion has been queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metadata'
+              example:
+                metadata:
+                  transaction_id: 01H4475BR866G0QNV06M672650
   /exclusions:
     post:
+      summary: Get exclusions
+      description: >
+        Remove policy YYYYYY from the list of policies for clientId
+        XXXXXX. It does this by creating an exemption record in the database
+        to be evaluated as above. If the exclusion exists, it is considered successful.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                clientId:
+                  type: string
+                policy:
+                  type: string
       responses:
+        '200':
+          description: Exclusion completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metadata'
+              example:
+                metadata:
+                  transaction_id: 01H4475BR866G0QNV06M672650
         '202':
-          description: OK
+          description: Exclusion is queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metadata'
+              example:
+                metadata:
+                  transaction_id: 01H4475BR866G0QNV06M672650
     delete:
+      summary: Delete exclusions
+      description: >
+        Remove exclusion YYYYYY from the list of policies for clientId XXXXXXX.
+        It does this by deleting the exemption record in the database to be
+        evaluated as above.
+      parameters:
+        - name: clientId
+          in: query
+          description: The unique client ID for a given client
+          required: false
+          schema:
+            type: string
+        - name: policy
+          in: query
+          description: The policy name
+          required: true
+          schema:
+            type: string
       responses:
+        '200':
+          description: Exclusion deletion completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metadata'
+              example:
+                metadata:
+                  transaction_id: 01H4475BR866G0QNV06M672650
         '202':
-          description: OK
+          description: Exclusion deletion is queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Metadata'
+              example:
+                metadata:
+                  transaction_id: 01H4475BR866G0QNV06M672650
 components:
   schemas:
     Info:
       type: object
       properties:
-        version: string
+        version:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Metadata'
     Policy:
       type: object
       properties:
-        _et: string
-        _default: boolean
-        name: string
-        version: string
-        location: string
-    Exemption:
+        name:
+          type: string
+        version:
+          type: string
+        location:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+    Metadata:
       type: object
       properties:
-        _et: string
-        name: string
-        clientId: string
-    Additions:
-      type: object
-      properties:
-        _et: string
-        name: string
-        version: string
-        location: string
-        clientId: string
+        transaction_id:
+          type: string
