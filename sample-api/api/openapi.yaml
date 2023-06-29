@@ -58,9 +58,7 @@ paths:
                 metadata:
                   transaction_id: 01H446AJM6GEY9833ZFYGYQS1N
               schema:
-                items:
-                  $ref: '#/components/schemas/Policy'
-                type: array
+                $ref: '#/components/schemas/_policies_get_200_response'
           description: List of policies for a given client ID
       summary: Get policies
     post:
@@ -184,7 +182,7 @@ paths:
   /exclusions:
     delete:
       description: |
-        Remove exclusion YYYYYY from the list of policies for clientId XXXXXXX. It does this by deleting the exemption record in the database to be evaluated as above.
+        Remove exclusion YYYYYY from the list of policies for clientId XXXXXXX. It does this by deleting the excemption record in the database to be evaluated as above.
       parameters:
       - description: The unique client ID for a given client
         explode: true
@@ -265,8 +263,6 @@ components:
       type: object
     Policy:
       example:
-        metadata:
-          transaction_id: transaction_id
         name: name
         location: location
         version: version
@@ -277,8 +273,6 @@ components:
           type: string
         location:
           type: string
-        metadata:
-          $ref: '#/components/schemas/Metadata'
       type: object
     Metadata:
       example:
@@ -286,6 +280,25 @@ components:
       properties:
         transaction_id:
           type: string
+      type: object
+    _policies_get_200_response:
+      example:
+        metadata:
+          transaction_id: transaction_id
+        policies:
+        - name: name
+          location: location
+          version: version
+        - name: name
+          location: location
+          version: version
+      properties:
+        policies:
+          items:
+            $ref: '#/components/schemas/Policy'
+          type: array
+        metadata:
+          $ref: '#/components/schemas/Metadata'
       type: object
     _policies_post_request:
       properties:

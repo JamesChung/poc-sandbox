@@ -16,15 +16,10 @@ type Policy struct {
 	Version string `json:"version,omitempty"`
 
 	Location string `json:"location,omitempty"`
-
-	Metadata Metadata `json:"metadata,omitempty"`
 }
 
 // AssertPolicyRequired checks if the required fields are not zero-ed
 func AssertPolicyRequired(obj Policy) error {
-	if err := AssertMetadataRequired(obj.Metadata); err != nil {
-		return err
-	}
 	return nil
 }
 

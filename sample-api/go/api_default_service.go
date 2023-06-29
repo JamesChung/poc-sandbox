@@ -95,8 +95,8 @@ func (s *DefaultApiService) PoliciesGet(ctx context.Context, clientId string, co
 	// TODO - update PoliciesGet with the required logic for this service method.
 	// Add api_default_service.go to the .openapi-generator-ignore to avoid overwriting this service implementation when updating open api generation.
 
-	//TODO: Uncomment the next line to return response Response(200, []Policy{}) or use other options such as http.Ok ...
-	//return Response(200, []Policy{}), nil
+	//TODO: Uncomment the next line to return response Response(200, PoliciesGet200Response{}) or use other options such as http.Ok ...
+	//return Response(200, PoliciesGet200Response{}), nil
 
 	return Response(http.StatusNotImplemented, nil), errors.New("PoliciesGet method not implemented")
 }

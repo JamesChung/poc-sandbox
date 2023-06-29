@@ -12,6 +12,7 @@ go/impl.go
 go/logger.go
 go/model__configs_get_200_response.go
 go/model__exclusions_post_request.go
+go/model__policies_get_200_response.go
 go/model__policies_post_request.go
 go/model_info.go
 go/model_metadata.go
