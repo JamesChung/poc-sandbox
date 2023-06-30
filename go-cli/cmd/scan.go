@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -24,6 +25,11 @@ func setScanPersistentFlags(flags *pflag.FlagSet) {
 		cwd,
 		"IaC root directory",
 	)
+	flags.String(
+		"id",
+		"",
+		"Application's Client ID",
+	)
 }
 func NewScanCommand() *cobra.Command {
 	cmd := &cobra.Command{
@@ -38,14 +44,12 @@ func NewScanCommand() *cobra.Command {
 func scanRun(cmd *cobra.Command, args []string) {
 	directory, err := cmd.Flags().GetString("directory")
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
 	policies, err := getPolicies()
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
 	policyNames := make([]string, 0, len(policies))
@@ -63,7 +67,7 @@ func scanRun(cmd *cobra.Command, args []string) {
 
 	stdout, err := checkov.StdoutPipe()
 	if err != nil {
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
 	defer stdout.Close()
@@ -78,8 +82,14 @@ func scanRun(cmd *cobra.Command, args []string) {
 		}
 	}()
 
-	checkov.Start()
-	checkov.Wait()
+	err = checkov.Start()
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = checkov.Wait()
+	if err != nil {
+		log.Fatal("something is wrong with checkov: " + err.Error())
+	}
 	wg.Wait()
 }
 
