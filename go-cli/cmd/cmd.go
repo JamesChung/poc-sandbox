@@ -1,44 +1,29 @@
 package cmd
 
 import (
-	"bufio"
-	"fmt"
-	"os"
-	"os/exec"
-
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
-func NewCommand() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "codesecurity",
-		Short:   "codesecurity",
-		Version: "0.1.0",
-		Run:     run,
+func subCommands() []*cobra.Command {
+	return []*cobra.Command{
+		NewInitCommand(),
+		NewScanCommand(),
 	}
-	return cmd
 }
 
-func run(cmd *cobra.Command, args []string) {
-	checkov := exec.Command("checkov", args...)
-
-	stdout, err := checkov.StdoutPipe()
-	if err != nil {
-		os.Exit(1)
+func setPersistentFlags(flags *pflag.FlagSet) {
+	// TODO: Add possible flags in the future
+}
+func NewCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "chris",
+		Short:   "chris",
+		Version: "0.1.0",
 	}
-	defer stdout.Close()
-
-	stderr, err := checkov.StderrPipe()
-	if err != nil {
-		os.Exit(1)
+	setPersistentFlags(cmd.PersistentFlags())
+	for _, c := range subCommands() {
+		cmd.AddCommand(c)
 	}
-	defer stderr.Close()
-
-	checkov.Start()
-	defer checkov.Wait()
-
-	scanner := bufio.NewScanner(stdout)
-	for scanner.Scan() {
-		fmt.Println(scanner.Text())
-	}
+	return cmd
 }

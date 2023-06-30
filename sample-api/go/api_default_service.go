@@ -86,34 +86,59 @@ var ExcludedPolicies = make(map[string]bool)
 
 var AllPolicies = []Policy{
 	{
-		Name:     "EXAMPLE_RULE_42",
+		Name:     "CKV_AWS_93",
 		Version:  "1.0.0",
-		Location: "s3://example-bucket/example_policy_42.json",
+		Location: "s3://example-bucket/CKV_AWS_93.json",
 	},
 	{
-		Name:     "EXAMPLE_RULE_23",
+		Name:     "CKV_AWS_20",
 		Version:  "1.0.0",
-		Location: "s3://example-bucket/example_policy_23.json",
+		Location: "s3://example-bucket/CKV_AWS_20.json",
 	},
 	{
-		Name:     "EXAMPLE_RULE_49",
+		Name:     "CKV_AWS_19",
 		Version:  "1.0.0",
-		Location: "s3://example-bucket/example_policy_49.json",
+		Location: "s3://example-bucket/CKV_AWS_19.json",
 	},
 	{
-		Name:     "EXAMPLE_RULE_12",
+		Name:     "CKV_AWS_57",
 		Version:  "1.0.0",
-		Location: "s3://example-bucket/example_policy_12.json",
+		Location: "s3://example-bucket/CKV_AWS_57.json",
 	},
 	{
-		Name:     "EXAMPLE_RULE_26",
+		Name:     "CKV_AWS_145",
 		Version:  "1.0.0",
-		Location: "s3://example-bucket/example_policy_26.json",
+		Location: "s3://example-bucket/CKV_AWS_145.json",
 	},
 	{
-		Name:     "EXAMPLE_RULE_99",
+		Name:     "CKV2_AWS_61",
 		Version:  "1.0.0",
-		Location: "s3://example-bucket/example_policy_99.json",
+		Location: "s3://example-bucket/CKV2_AWS_61.json",
+	},
+	{
+		Name:     "CKV2_AWS_6",
+		Version:  "1.0.0",
+		Location: "s3://example-bucket/CKV2_AWS_6.json",
+	},
+	{
+		Name:     "CKV_AWS_21",
+		Version:  "1.0.0",
+		Location: "s3://example-bucket/CKV_AWS_21.json",
+	},
+	{
+		Name:     "CKV_AWS_144",
+		Version:  "1.0.0",
+		Location: "s3://example-bucket/CKV_AWS_144.json",
+	},
+	{
+		Name:     "CKV_AWS_18",
+		Version:  "1.0.0",
+		Location: "s3://example-bucket/CKV_AWS_18.json",
+	},
+	{
+		Name:     "CKV2_AWS_62",
+		Version:  "1.0.0",
+		Location: "s3://example-bucket/CKV2_AWS_62.json",
 	}}
 
 func PoliciesDelta() []Policy {
