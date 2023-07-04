@@ -5,9 +5,20 @@ info:
 servers:
   - url: https://api.matter.com/v1
     description: Production Endpoint
+tags:
+  - name: info
+    description: Server Info
+  - name: policies
+    description: Policies endpoint
+  - name: configs
+    description: Configs endpoint
+  - name: exemptions
+    description: Descriptions endpoint
 paths:
   /info:
     get:
+      tags:
+        - info
       summary: Get info
       description: >
         Gets the current version and any other data that may be useful
@@ -24,11 +35,13 @@ paths:
                   transaction_id: 01H44690SXVQTPH0ARJ357RYRW
   /policies:
     get:
+      tags:
+        - policies
       summary: Get policies
       description: >
         Gets an array of all the policies for a particular client ID
       parameters:
-        - name: clientId
+        - name: client_id
           in: query
           description: The client id
           required: true
@@ -65,20 +78,22 @@ paths:
                 metadata:
                   transaction_id: 01H446AJM6GEY9833ZFYGYQS1N
     post:
+      tags:
+        - policies
       summary: Add a policy
       description: >
-        Add an additional policy YYYYYY to clientId XXXXXX's to be returned. If the version is specified, it will be added as well. If an existing policy addition already exists, this will replace that entity.
+        Add an additional policy YYYYYY to client_id XXXXXX's to be returned. If the version is specified, it will be added as well. If an existing policy addition already exists, this will replace that entity.
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                clientId:
+                client_id:
                   type: string
                 policy:
                   type: string
-                policyVersion:
+                policy_version:
                   type: string
       responses:
         '201':
@@ -92,15 +107,17 @@ paths:
                   transaction_id: 01H443S4MKWBYCYVYSTQEXKBMA
   /configs:
     get:
+      tags:
+        - configs
       summary: Get configurations
       description: |
         Searches for a configuration item in the following order:
-        - by clientId/policy/policyVersion
-        - by clientId/policy
-        - by policy/policyVersion
+        - by client_id/policy/policy_version
+        - by client_id/policy
+        - by policy/policy_version
         - by policy
       parameters:
-        - name: clientId
+        - name: client_id
           in: query
           description: The unique client ID for a given client
           required: true
@@ -112,7 +129,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: policyVersion
+        - name: policy_version
           in: query
           description: The policy version
           required: true
@@ -133,11 +150,13 @@ paths:
                   metadata:
                     $ref: '#/components/schemas/Metadata'
     delete:
+      tags:
+        - configs
       summary: Delete configurations
       description: >
         Removes the configuration uniquely identified by the set of query parameters passed in.
       parameters:
-        - name: clientId
+        - name: client_id
           in: query
           description: The unique client ID for a given client
           required: false
@@ -149,7 +168,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: policyVersion
+        - name: policy_version
           in: query
           description: The policy version
           required: false
@@ -167,16 +186,18 @@ paths:
                   transaction_id: 01H4475BR866G0QNV06M672650
   /exclusions:
     post:
+      tags:
+        - exclusions
       summary: Exempt a policy for a given client
       description: >
-        Remove policy YYYYYY from the list of policies for clientId XXXXXX. It does this by creating an exemption record in the database to be evaluated as above. If the exclusion exists, it is considered successful.
+        Remove policy YYYYYY from the list of policies for client_id XXXXXX. It does this by creating an exemption record in the database to be evaluated as above. If the exclusion exists, it is considered successful.
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                clientId:
+                client_id:
                   type: string
                 policy:
                   type: string
@@ -191,11 +212,13 @@ paths:
                 metadata:
                   transaction_id: 01H4475BR866G0QNV06M672650
     delete:
+      tags:
+        - exclusions
       summary: Delete exclusions
       description: >
-        Remove exclusion YYYYYY from the list of policies for clientId XXXXXXX. It does this by deleting the exemption record in the database to be evaluated as above.
+        Remove exclusion YYYYYY from the list of policies for client_id XXXXXXX. It does this by deleting the exemption record in the database to be evaluated as above.
       parameters:
-        - name: clientId
+        - name: client_id
           in: query
           description: The unique client ID for a given client
           required: false
