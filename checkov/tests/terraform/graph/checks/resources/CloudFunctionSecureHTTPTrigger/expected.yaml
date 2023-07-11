@@ -1,5 +1,0 @@
-pass:
-  - "google_cloudfunctions_function.pass"
-fail:
-  - "google_cloudfunctions_function.fail_1"
-  - "google_cloudfunctions_function.fail_2"

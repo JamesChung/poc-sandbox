@@ -1,2 +1,0 @@
-pass:
-  - "aws_sqs_queue.sqs"
