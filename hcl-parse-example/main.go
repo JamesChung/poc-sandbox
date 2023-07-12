@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
+	"path/filepath"
 	"regexp"
 
 	"github.com/hashicorp/hcl/v2/hclparse"
@@ -12,15 +14,21 @@ import (
 	"github.com/tmccombs/hcl2json/convert"
 )
 
-func main() {
-	v, err := GetTerraformFiles(".")
+// GetUnifedJSONHCL returns a JSON representation of Terraform
+// in a given repository
+func GetUnifiedJSONTerraform(dir string) ([]byte, error) {
+	if !path.IsAbs(dir) {
+		return nil, fmt.Errorf("dir %s is not an absolute path", dir)
+	}
+
+	v, err := GetTerraformFiles(dir)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	fbs, err := ReadFiles(v)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	unifiedTerraform := FileBytesSlice(fbs).Concatenate()
@@ -37,7 +45,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// fmt.Println(string(b))
+	return b, nil
+}
+
+func main() {
+	fp, _ := filepath.Abs("./modules")
+	b, err := GetUnifiedJSONTerraform(fp)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	result, err := marshmallow.Unmarshal(b, &struct{}{})
 	if err != nil {
@@ -79,6 +95,10 @@ func (fbs FileBytesSlice) Concatenate() []byte {
 }
 
 func GetTerraformFiles(dir string) ([]string, error) {
+	if !path.IsAbs(dir) {
+		return nil, fmt.Errorf("dir %s is not an absolute path", dir)
+	}
+
 	dirEntry, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
@@ -96,7 +116,7 @@ func GetTerraformFiles(dir string) ([]string, error) {
 	for _, v := range dirEntry {
 		if v.Type().IsRegular() {
 			if re.MatchString(v.Name()) {
-				ss = append(ss, v.Name())
+				ss = append(ss, filepath.Join(dir, v.Name()))
 			}
 		}
 	}
