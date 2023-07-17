@@ -11,8 +11,10 @@ package openapi
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
+	"sigs.k8s.io/yaml"
 )
 
 // InfoGet - Get info
@@ -20,4 +22,20 @@ func InfoGet(c *gin.Context) {
 	c.JSON(http.StatusOK, Info{
 		Version: "1.0.0",
 	})
+}
+
+func DocsGet(c *gin.Context) {
+	b, err := os.ReadFile("../openapi.yaml")
+	if err != nil {
+		c.Error(err)
+	}
+	c.Header("Access-Control-Allow-Origin", "*")
+	// c.YAML(http.StatusOK, b)
+	// yb, err := yaml.YAMLToJSON(b)
+	// if err != nil {
+	// 	c.Error(err)
+	// }
+	m := make(map[string]any)
+	yaml.UnmarshalStrict(b, &m)
+	c.JSON(http.StatusOK, m)
 }
