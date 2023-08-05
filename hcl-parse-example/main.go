@@ -1,26 +1,22 @@
 package main
 
 import (
-	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
-	"path"
 	"path/filepath"
 	"regexp"
 
+	"github.com/hashicorp/hcl/v2"
+	"github.com/hashicorp/hcl/v2/gohcl"
 	"github.com/hashicorp/hcl/v2/hclparse"
-	"github.com/perimeterx/marshmallow"
 	"github.com/tmccombs/hcl2json/convert"
 )
 
 // GetUnifedJSONHCL returns a JSON representation of Terraform
 // in a given repository
 func GetUnifiedJSONTerraform(dir string) ([]byte, error) {
-	if !path.IsAbs(dir) {
-		return nil, fmt.Errorf("dir %s is not an absolute path", dir)
-	}
-
 	v, err := GetTerraformFiles(dir)
 	if err != nil {
 		return nil, err
@@ -48,38 +44,91 @@ func GetUnifiedJSONTerraform(dir string) ([]byte, error) {
 	return b, nil
 }
 
+func GetUnifiedTerraform(dir string) (*hcl.File, error) {
+	v, err := GetTerraformFiles(dir)
+	if err != nil {
+		return nil, err
+	}
+
+	fbs, err := ReadFiles(v)
+	if err != nil {
+		return nil, err
+	}
+
+	unifiedTerraform := FileBytesSlice(fbs).Concatenate()
+
+	parser := hclparse.NewParser()
+
+	f, d := parser.ParseHCL(unifiedTerraform, "unifiedTerraform.hcl")
+	if d.HasErrors() {
+		log.Fatal(d.Error())
+	}
+
+	return f, nil
+}
+
+func GetRoleARNsFromAWSProviders(f *hcl.File) ([]string, error) {
+	var t Terraform
+
+	diag := gohcl.DecodeBody(f.Body, nil, &t)
+	if diag.HasErrors() {
+		for _, e := range diag.Errs() {
+			return nil, errors.Join(e)
+		}
+	}
+
+	roleARNs := make([]string, 0, len(t.Providers))
+
+	for _, v := range t.Providers {
+		var as AssumeRole
+		gohcl.DecodeBody(v.Remain, nil, &as)
+		if len(as.Block.RoleARN) > 0 {
+			roleARNs = append(roleARNs, as.Block.RoleARN)
+		}
+	}
+
+	return roleARNs, nil
+}
+
+type Terraform struct {
+	Providers []Provider `hcl:"provider,block"`
+	Remain    hcl.Body   `hcl:",remain"`
+}
+
+type Provider struct {
+	Name   string   `hcl:"name,label"`
+	Alias  string   `hcl:"alias,optional"`
+	Region string   `hcl:"region,optional"`
+	Remain hcl.Body `hcl:",remain"`
+}
+
+type AssumeRole struct {
+	Block  AssumeRoleBlock `hcl:"assume_role,block"`
+	Remain hcl.Body        `hcl:",remain"`
+}
+
+type AssumeRoleBlock struct {
+	RoleARN string   `hcl:"role_arn,optional"`
+	Remain  hcl.Body `hcl:",remain"`
+}
+
 func main() {
-	fp, _ := filepath.Abs("./modules")
-	b, err := GetUnifiedJSONTerraform(fp)
+	fp, err := filepath.Abs("./modules")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	result, err := marshmallow.Unmarshal(b, &struct{}{})
+	h, err := GetUnifiedTerraform(fp)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	val, err := json.Marshal(result)
+	arns, err := GetRoleARNsFromAWSProviders(h)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(string(val))
 
-	// fmt.Printf("%#v\n", result)
-	// fmt.Println("---")
-	// fmt.Printf("%#v\n", result["module"])
-	// m := result["module"].(map[string]any)
-	// fmt.Println("------")
-	// someVal, err := marshmallow.UnmarshalFromJSONMap(m, &struct{}{})
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fmt.Println(someVal)
-	// fmt.Println("--")
-	// for k, v := range someVal {
-	// 	fmt.Println(k, v)
-	// }
+	fmt.Println(arns)
 }
 
 type FileBytesSlice [][]byte
@@ -95,10 +144,6 @@ func (fbs FileBytesSlice) Concatenate() []byte {
 }
 
 func GetTerraformFiles(dir string) ([]string, error) {
-	if !path.IsAbs(dir) {
-		return nil, fmt.Errorf("dir %s is not an absolute path", dir)
-	}
-
 	dirEntry, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
