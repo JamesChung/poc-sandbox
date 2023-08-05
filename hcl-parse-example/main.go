@@ -80,6 +80,9 @@ func GetRoleARNsFromAWSProviders(f *hcl.File) ([]string, error) {
 	roleARNs := make([]string, 0, len(t.Providers))
 
 	for _, v := range t.Providers {
+		if v.Name != "aws" {
+			continue
+		}
 		var as AssumeRole
 		gohcl.DecodeBody(v.Remain, nil, &as)
 		if len(as.Block.RoleARN) > 0 {
